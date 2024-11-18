@@ -10,13 +10,14 @@ ${CAMPO_CARGO}     id:form-cargo
 ${CAMPO_IMAGEM}    id:form-imagem
 ${CAMPO_TIME}      class:lista-suspensa
 ${CAMPO_CARD}      id:form-botao
-${PROGRAMACAO}     //option[contains(.,'Programação')]
-${FRONT-END}       //option[contains(.,'Front-End')]
-${DADOS}           //option[contains(.,'Data Science')]
-${DEVOPS}          //option[contains(.,'Devops')]
-${UX}              //option[contains(.,'UX e Design')]
-${MOBILE}          //option[contains(.,'Mobile')]
-${INOVACAO}        //option[contains(.,'Inovação')]
+@{selecionar_times}
+...       //option[contains(.,'Programação')]
+...       //option[contains(.,'Front-End')]
+...       //option[contains(.,'Data Science')]
+...       //option[contains(.,'Devops')]
+...       //option[contains(.,'UX e Design')]
+...       //option[contains(.,'Mobile')]
+...       //option[contains(.,'Inovação')]
 
 *** Test Cases ***
 
@@ -30,16 +31,20 @@ Verificar se ao preencher os dados corretamente mais de uma vez, os dados são i
     E clique no botão criar card
     Então identificar 3 cards no time esperado
 
+Verificar se é possível criar um card para cada time se preenchermos os campos corretamente
+    Dado que eu preencha os campos do formulário
+    Então criar e identificar 1 card em cada time disponível
+
 *** Keywords ***
 Dado que eu preencha os campos do formulário
     ${Nome}             FakerLibrary.First Name
     Input Text          ${CAMPO_NOME}        ${Nome}
     ${Cargo}            FakerLibrary.Job
     Input Text          ${CAMPO_CARGO}      ${Cargo}
-    ${Imagem}           FakerLibrary.Image Url
+    ${Imagem}           FakerLibrary.Image Url    width=100    height=100
     Input Text          ${CAMPO_IMAGEM}     ${Imagem}
     Click Element       ${CAMPO_TIME}
-    Click Element       ${PROGRAMACAO}
+    Click Element       ${selecionar_times}[0]
 E clique no botão criar card    
     Click Element    ${CAMPO_CARD}
 
@@ -51,3 +56,12 @@ Então identificar 3 cards no time esperado
         Dado que eu preencha os campos do formulário
         E clique no botão criar card
     END
+
+Então criar e identificar 1 card em cada time disponível
+    FOR    ${index}    ${time}    IN ENUMERATE    @{selecionar_times}
+        Dado que eu preencha os campos do formulário
+        Click Element            ${time}
+        E clique no botão criar card
+    END
+
+    Sleep    10s
